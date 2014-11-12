@@ -33,14 +33,8 @@ import org.hibernate.annotations.CascadeType;
  * @date 2014-4-20
  */
 @Entity
-@Table(name="tbl_user")
-@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(
-    name="discriminator",
-    discriminatorType=DiscriminatorType.STRING
-)
-@DiscriminatorValue(value="User")
-public class User implements Serializable{
+@Table(name="tbl_manager")
+public class Manager implements Serializable{
 	/**
 	 * 
 	 */
@@ -248,8 +242,5 @@ public class User implements Serializable{
 	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
 	}
-	
-	
-	
-	
+
 }

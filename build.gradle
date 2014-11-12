@@ -19,6 +19,7 @@ configure(allprojects) { project ->
     ext.shiroVersion = '1.2.4-SNAPSHOT'//build by self for redis cache error
     ext.mysqlDriverVersion = '5.1.25'
     ext.druidVersion = '1.0.8'
+    ext.redisClusterVersion = '0.0.1-release'
     
     apply plugin: 'java'
     apply plugin: 'eclipse'
@@ -90,7 +91,8 @@ project("shiro-rbac-sso") {
 	dependencies {
 		compile(project(":shiro-rbac-lib"))
     	compile(project(":shiro-rbac-config"))
-    	compile(project(":shiro-redis-cluster"))
+    	//compile(project(":shiro-redis-cluster"))
+    	compile("me.itsoho:shiro-redis-cluster:${redisClusterVersion}")
     	
     	compile("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
     	compile("org.springframework.boot:spring-boot-starter-aop:${springBootVersion}")
@@ -112,6 +114,28 @@ project("shiro-rbac-sso") {
 	}
 }
 
+
+project("shiro-rbac-client"){
+	description = "Shiro RBAC Client"
+	
+	dependencies {
+		compile("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
+    	compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+    	compile("org.apache.shiro:shiro-core:${shiroVersion}")
+	}
+}
+
+
+project("shiro-rbac-lib") {
+	description = "Shiro RBAC Lib"
+	
+	dependencies {
+		compile("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
+    	compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+    	compile("org.apache.shiro:shiro-core:1.2.2")
+    	compile("org.apache.shiro:shiro-web:1.2.2")
+	}
+}
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.0'

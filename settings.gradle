@@ -1,4 +1,4 @@
-include "shiro-redis-cluster"
+//include "shiro-redis-cluster"
 include "shiro-rbac-lib"
 include "shiro-rbac-client"
 include "shiro-rbac-sso"
