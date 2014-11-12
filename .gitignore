@@ -2,4 +2,7 @@
 .gradle/
 .project
 .settings/
+**springBeans
 **build/
+**bin/
+**work/

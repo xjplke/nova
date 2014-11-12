@@ -9,6 +9,7 @@ import me.itsoho.rbac.domain.Manager;
 import me.itsoho.rbac.domain.Role;
 import me.itsoho.rbac.repo.ManagerRepository;
 import me.itsoho.rbac.repo.RoleRepository;
+import me.itsoho.rbac.util.PermissionDetect;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,12 +28,13 @@ public class InitData {
 	PermissionDetect permissionDetect(@Qualifier("requestMappingHandlerMapping")RequestMappingHandlerMapping handlerMapping,
 			WebApplicationContext webApplicationContext){
 		//TODO:add license control
-		return PermissionDetect.getPermissionDetect(handlerMapping, webApplicationContext);
+		String[] ss = {"me.itsoho.rbac.controller"};
+		return PermissionDetect.getPermissionDetect(handlerMapping, webApplicationContext,ss);
 	}
 	
 	@Bean
 	@Autowired
-	Manager initAdmin( PermissionDetect permissionDetect, RoleRepository roleRepo,ManagerRepository managerRepo){
+	Manager initAdmin( RoleRepository roleRepo,ManagerRepository managerRepo){
 		Role adminRole;
 		List<Role> rlst = roleRepo.findByRole("admin");
 		if (rlst==null || rlst.size()==0){
