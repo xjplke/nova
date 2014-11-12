@@ -1,0 +1,129 @@
+//buildscript {
+//	repositories {
+//		maven { url "http://repo.springsource.org/plugins-release" }
+//	}
+//	dependencies {
+//		classpath("org.springframework.build.gradle:propdeps-plugin:0.0.7")
+//		classpath("org.asciidoctor:asciidoctor-gradle-plugin:0.7.0")
+//		classpath("io.spring.gradle:docbook-reference-plugin:0.3.0")
+//		classpath("ws.antonov.gradle.plugins:gradle-plugin-protobuf:0.9.1")
+//	}
+//}
+
+
+configure(allprojects) { project ->
+    group = "me.itsoho"
+    version = qualifyVersionIfNecessary(version)
+    
+    ext.springBootVersion = '1.1.5.RELEASE'
+    ext.shiroVersion = '1.2.4-SNAPSHOT'//build by self for redis cache error
+    ext.mysqlDriverVersion = '5.1.25'
+    ext.druidVersion = '1.0.8'
+    
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+    
+    repositories {
+    	mavenLocal()
+    	mavenCentral()
+    	//maven {url "https://raw.githubusercontent.com/HaraldWalker/user-agent-utils/mvn-repo/"}
+    	//maven { url "http://maven.oschina.net/content/groups/public/"}
+    }
+    
+    //dependencies {
+    //	testCompile
+    //}
+}
+
+configure(subprojects) { subproject -> 
+
+    jar {
+		manifest.attributes["Created-By"] =
+			"${System.getProperty("java.version")} (${System.getProperty("java.specification.vendor")})"
+		manifest.attributes["Implementation-Title"] = subproject.name
+		manifest.attributes["Implementation-Version"] = subproject.version
+
+		from("${rootProject.projectDir}/src/dist") {
+			include "license.txt"
+			include "notice.txt"
+			into "META-INF"
+			expand(copyright: new Date().format("yyyy"), version: project.version)
+		}
+	}
+
+	javadoc {
+		description = "Generates project-level javadoc for use in -javadoc jar"
+
+		options.memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PROTECTED
+		options.author = true
+		options.header = project.name
+		options.addStringOption('-quiet')
+
+		// suppress warnings due to cross-module @see and @link references;
+		// note that global 'api' task does display all warnings.
+		logging.captureStandardError LogLevel.INFO
+		logging.captureStandardOutput LogLevel.INFO // suppress "## warnings" message
+	}
+	
+	task sourcesJar(type: Jar, dependsOn: classes) {
+		classifier = 'sources'
+		from sourceSets.main.allSource
+		// don't include or exclude anything explicitly by default. See SPR-12085.
+	}
+
+	task javadocJar(type: Jar) {
+		classifier = "javadoc"
+		from javadoc
+	}
+
+	artifacts {
+		archives sourcesJar
+		archives javadocJar
+	}
+}
+
+project("shiro-rbac-sso") {
+	description = "Shiro RBAC SSO Server"
+	
+	dependencies {
+		compile(project(":shiro-rbac-lib"))
+    	compile(project(":shiro-rbac-config"))
+    	compile(project(":shiro-redis-cluster"))
+    	
+    	compile("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
+    	compile("org.springframework.boot:spring-boot-starter-aop:${springBootVersion}")
+    	compile("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
+    	compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+    	compile("org.springframework.boot:spring-boot-starter-tomcat:${springBootVersion}") 
+    	compile("mysql:mysql-connector-java:${mysqlDriverVersion}")
+    	
+    	compile("com.alibaba:druid:1.0.8")
+    	
+    	compile("org.apache.shiro:shiro-core:${shiroVersion}")
+    	compile("org.apache.shiro:shiro-web:${shiroVersion}")
+    	compile("org.apache.shiro:shiro-spring:${shiroVersion}")
+    	compile("org.apache.shiro:shiro-aspectj:${shiroVersion}")
+    	compile("org.apache.shiro:shiro-ehcache:${shiroVersion}")
+    	
+    	//compile("org.jvnet.ws.wadl:wadl-client-plugin:1.1.6")
+   		//compile("org.jvnet.ws.wadl:wadl-core:1.1.6")
+	}
+}
+
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.0'
+}
+
+
+def qualifyVersionIfNecessary(version) {
+//	if (rootProject.hasProperty("BRANCH_NAME")) {
+//		def qualifier = rootProject.getProperty("BRANCH_NAME")
+//		if (qualifier.startsWith("SPR-")) {
+//			return version.replace('BUILD', qualifier)
+//		}
+//	}
+	return version
+}
