@@ -137,6 +137,15 @@ project("shiro-rbac-lib") {
 	}
 }
 
+project("shiro-rbac-config"){
+    description = "Shiro RBAC Config"
+    
+    dependencies {
+        compile("me.itsoho:shiro-redis-cluster:0.0.1-release")
+        compile("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
+    }
+}
+
 task wrapper(type: Wrapper) {
     gradleVersion = '2.0'
 }
